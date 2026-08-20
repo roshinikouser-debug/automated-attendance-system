@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academy Enrollment - AutoSystem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="main-container">
+        <div class="row align-items-center justify-content-center min-vh-100 py-5">
+            <div class="col-md-8 col-lg-6">
+                <div class="glass-card shadow-pro">
+                    <div class="text-center mb-5">
+                        <div class="mx-auto mb-4 d-flex align-items-center justify-content-center" 
+                             style="width: 72px; height: 72px; font-size: 2rem; border-radius: 20px; background: linear-gradient(135deg, var(--brand-secondary), #059669); color: #fff; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.2);">
+                            <i class="fa fa-user-plus"></i>
+                        </div>
+                        <h1 class="h3 mb-2 fw-800 text-gradient">Academy Enrollment</h1>
+                        <p class="text-muted small">Begin your secure biometric academic journey.</p>
+                    </div>
+
+                    <form th:action="@{/register}" method="POST" enctype="multipart/form-data">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="label-caps small">Full Name</label>
+                                <input class="form-control py-2" name="name" placeholder="John Doe" minlength="2" required style="border-radius: 12px; border-color: #e2e8f0;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label-caps small">Academy Email</label>
+                                <input type="email" class="form-control py-2" name="email" placeholder="john@academy.edu" required style="border-radius: 12px; border-color: #e2e8f0;">
+                            </div>
+                        </div>
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="label-caps small">Security Pass</label>
+                                <input type="password" class="form-control py-2" name="password" placeholder="Min. 6 chars" minlength="6" required style="border-radius: 12px; border-color: #e2e8f0;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label-caps small">Academy Role</label>
+                                <select class="form-select py-2" name="role" id="roleSelect" onchange="toggleStudentFields()" required style="border-radius: 12px; border-color: #e2e8f0; font-weight: 500;">
+                                    <option value="student">Student Explorer</option>
+                                    <option value="faculty">Faculty Leader</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="studentFields" class="p-4 rounded-4 mb-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label class="label-caps small">Academic Group / Class</label>
+                                    <input class="form-control py-2" name="class_name" id="classNameField" placeholder="e.g. Year 10-A" style="border-radius: 12px; border-color: #cbd5e1; background: #fff;">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="label-caps small">Assigned Roll Number</label>
+                                    <input class="form-control py-2" name="roll_number" id="rollNumberField" placeholder="e.g. CS-24-001" style="border-radius: 12px; border-color: #cbd5e1; background: #fff;">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="label-caps small">Biometric Profile Photo</label>
+                                <input type="file" name="image" id="imageField" class="form-control py-2" accept="image/*" style="border-radius: 12px; border-color: #cbd5e1; background: #fff;">
+                                <div class="d-flex align-items-center mt-2 text-muted" style="font-size: 0.75rem;">
+                                    <i class="fa fa-circle-info me-1"></i>
+                                    Required for AI verification. Use a clear face photo.
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label class="label-caps small mb-0">Academic Subject Enrollment</label>
+                                    <span class="badge bg-slate-100 text-slate-500 border" id="subjectCounter">0/8 selected</span>
+                                </div>
+                                <div class="row g-2">
+                                    <div th:each="sub, stat : ${all_subjects}" class="col-6 col-md-4">
+                                        <div class="form-check custom-checkbox p-2 rounded-3 border bg-white shadow-xs transition-all h-100 d-flex align-items-center">
+                                            <input class="form-check-input ms-0 me-2 subject-check" type="checkbox" name="subjects" th:value="${sub}" th:id="'sub_' + ${stat.index}">
+                                            <label class="form-check-label smaller text-dark mb-0 fw-500" th:for="'sub_' + ${stat.index}" style="font-size: 0.75rem;" th:text="${sub}">
+                                                Subject
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3 text-muted" style="font-size: 0.7rem;">
+                                    <i class="fa fa-circle-info me-1"></i> You can select a maximum of <strong>8 subjects</strong> for verification.
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-zen w-100 py-3 shadow" style="background: linear-gradient(135deg, var(--brand-secondary), #0d9488);">
+                            Complete Enrollment <i class="fa fa-graduation-cap ms-2"></i>
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted small mb-0">Already an academy member? <a th:href="@{/}" class="text-brand-secondary fw-bold text-decoration-none">Return to Portal</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script th:inline="javascript">
+        function toggleStudentFields() {
+            var role = document.getElementById("roleSelect").value;
+            var stdFields = document.getElementById("studentFields");
+            var subj = document.getElementById("classNameField");
+            var subjCode = document.getElementById("rollNumberField");
+            var img = document.getElementById("imageField");
+
+            if (role === 'student') {
+                stdFields.style.opacity = '1';
+                stdFields.style.pointerEvents = 'auto';
+                if(subj) subj.required = true;
+                if(subjCode) subjCode.required = true;
+                if(img) img.required = true;
+            } else {
+                stdFields.style.opacity = '0.3';
+                stdFields.style.pointerEvents = 'none';
+                if(subj) subj.required = false;
+                if(subjCode) subjCode.required = false;
+                if(img) img.required = false;
+                if(subj) subj.value = '';
+                if(subjCode) subjCode.value = '';
+            }
+        }
+
+        const mandatoryCount = 8;
+        const subjectChecks = document.querySelectorAll('.subject-check');
+        const counter = document.getElementById('subjectCounter');
+        const registerBtn = document.querySelector('button[type="submit"]');
+
+        function updateCounter() {
+            const checkedCount = document.querySelectorAll('.subject-check:checked').length;
+            if (checkedCount === mandatoryCount) {
+                counter.innerText = `${checkedCount}/8 - COMPLETED`;
+                counter.className = 'badge bg-success text-white border';
+                registerBtn.disabled = false;
+                registerBtn.classList.remove('opacity-50');
+            } else {
+                counter.innerText = `${checkedCount}/8 - MANDATORY`;
+                counter.className = 'badge bg-danger text-white border';
+                registerBtn.disabled = true;
+                registerBtn.classList.add('opacity-50');
+            }
+            
+            subjectChecks.forEach(cb => {
+                if (!cb.checked && checkedCount >= mandatoryCount) {
+                    cb.disabled = true;
+                    cb.parentElement.classList.add('opacity-50');
+                } else {
+                    cb.disabled = false;
+                    cb.parentElement.classList.remove('opacity-50');
+                }
+            });
+        }
+
+        subjectChecks.forEach(cb => cb.addEventListener('change', updateCounter));
+        toggleStudentFields();
+        updateCounter();
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let errorMsg = /*[[${error}]]*/ null;
+            let successMsg = /*[[${success}]]*/ null;
+            function showToast(text, bg) {
+                if (!text) return;
+                Toastify({ text: text, duration: 4000, close: true, gravity: "top", position: "right", style: { background: bg, borderRadius: "10px", padding: "12px 20px", color: "#fff" } }).showToast();
+            }
+            if (errorMsg) showToast(errorMsg, "linear-gradient(to right, #f43f5e, #e11d48)");
+            if (successMsg) showToast(successMsg, "linear-gradient(to right, #10b981, #059669)");
+        });
+    </script>
+</body>
+</html>

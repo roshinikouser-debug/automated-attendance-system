@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoSystem - Attendance Management System</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Zen Animated Background Blobs -->
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="main-container">
+        <div th:replace="${content}"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- Flash Messages via Toastify -->
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            let errorMsg = /*[[${error}]]*/ null;
+            let successMsg = /*[[${success}]]*/ null;
+            let warningMsg = /*[[${warning}]]*/ null;
+            let infoMsg = /*[[${info}]]*/ null;
+
+            function showToast(text, bg) {
+                if (!text) return;
+                Toastify({
+                    text: text,
+                    duration: 4000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    style: {
+                        background: bg,
+                        borderRadius: "10px",
+                        padding: "12px 20px",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                        fontWeight: "500",
+                        color: "#fff"
+                    }
+                }).showToast();
+            }
+
+            if (errorMsg) showToast(errorMsg, "linear-gradient(to right, #f43f5e, #e11d48)");
+            if (successMsg) showToast(successMsg, "linear-gradient(to right, #10b981, #059669)");
+            if (warningMsg) showToast(warningMsg, "linear-gradient(to right, #f59e0b, #d97706)");
+            if (infoMsg) showToast(infoMsg, "linear-gradient(to right, #3b82f6, #2563eb)");
+        });
+    </script>
+</body>
+</html>

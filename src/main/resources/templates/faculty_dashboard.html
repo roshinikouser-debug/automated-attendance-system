@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Management Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="main-container dashboard-container">
+        <div class="dash-header">
+            <div>
+                <h1 class="text-gradient">Faculty Center</h1>
+                <p>Manage academic sessions and student verification logs.</p>
+            </div>
+            <a th:href="@{/logout}" class="btn btn-zen btn-secondary btn-sm">
+                <i class="fa fa-power-off me-2"></i> Log Out
+            </a>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="glass-card shadow-sm border-0">
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="fa fa-chart-pie text-gradient me-2 fa-lg"></i>
+                        <h4 class="mb-0">Subject Registry Analytics</h4>
+                    </div>
+                    <div class="row g-3">
+                        <div th:each="entry : ${subject_sessions}" class="col-6 col-md-4 col-lg-2">
+                            <div class="p-3 rounded-4 bg-light border text-center transition-all h-100 d-flex flex-column justify-content-center">
+                                <div class="fw-bold text-brand-primary" style="font-size: 1.25rem;" th:text="${entry.value}">0</div>
+                                <div class="label-caps smaller mb-0" style="font-size: 0.6rem;" th:text="${entry.key} + ' Sessions'">Subject Sessions</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="glass-card h-100">
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa fa-qrcode text-gradient me-2 fa-lg"></i>
+                            <h4 class="mb-0">Attendance Control</h4>
+                        </div>
+                        <p class="text-muted small">Select the academic subject to initialize the attendance verification scan.</p>
+                    </div>
+                    
+                    <form th:action="@{/start_attendance}" method="POST">
+                        <div class="mb-3">
+                            <label class="label-caps small text-muted">Search Student Name / ID</label>
+                            <input type="text" id="studentSearchInput" class="form-control py-3" 
+                                   placeholder="Type name or roll number..." list="studentDataList" autocomplete="off"
+                                   style="border-radius: 12px; border-color: #e2e8f0; font-weight: 500;">
+                            <datalist id="studentDataList">
+                                <option th:each="st : ${students}" th:data-id="${st.id}" th:value="${st.name} + ' (' + (${st.rollNumber} ?: 'N/A') + ')'"></option>
+                            </datalist>
+                            <input type="hidden" name="student_id" id="controlStudentId">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="label-caps small text-muted">Academic Subject</label>
+                            <select name="subject_name" id="controlSubject" class="form-select py-3" required
+                                    style="border-radius: 12px; border-color: #e2e8f0; font-weight: 500;">
+                                <option value="" disabled selected>Choose Subject...</option>
+                                <option th:each="sub : ${all_subjects}" th:value="${sub}" th:text="${sub}">Subject</option>
+                            </select>
+                        </div>
+
+                        <div id="registrationStatus" class="mb-4 d-none">
+                            <div class="p-3 rounded-4 border d-flex align-items-center justify-content-between shadow-xs">
+                                <div class="d-flex align-items-center">
+                                    <i id="statusIcon" class="fa fa-circle-check me-2"></i>
+                                    <span id="statusText" class="small fw-600">Checking...</span>
+                                </div>
+                                <span id="statusBadge" class="badge rounded-pill px-3">...</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 p-3 rounded-4 bg-slate-50 border border-slate-200">
+                            <h6 class="label-caps small fw-bold mb-2"><i class="fa fa-circle-info me-1"></i> Scanning Guide</h6>
+                            <ul class="list-unstyled smaller text-muted mb-0" style="line-height: 1.6;">
+                                <li><span class="badge bg-white text-dark border me-1">1</span> Select subject from list</li>
+                                <li><span class="badge bg-white text-dark border me-1">2</span> Click <strong>Initialize Scan</strong></li>
+                                <li><span class="badge bg-white text-dark border me-1">3</span> Press <strong>[SPACE]</strong> to capture group</li>
+                                <li><span class="badge bg-white text-dark border me-1">4</span> Press <strong>[ESC]</strong> to save & exit</li>
+                            </ul>
+                        </div>
+
+                        <button type="submit" id="initScanBtn" class="btn btn-zen w-100 py-3 shadow-lg" disabled>
+                            <i class="fa fa-camera-rotate me-2"></i> Initialize Attendance Scan
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="glass-card mb-4 mt-0 border border-slate-200">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa fa-pen-to-square text-gradient me-2 fa-lg"></i>
+                        <h4 class="mb-0">Manual Corrections</h4>
+                    </div>
+                    <form th:action="@{/mark_manual}" method="POST" class="row border p-3 rounded align-items-end g-3" style="background: #f8fafc; border-color: #e2e8f0;">
+                        <div class="col-md-4">
+                            <label class="label-caps small text-muted">Student Explorer</label>
+                            <select name="student_id" class="form-select" required style="border-radius: 8px;">
+                                <option value="">-- Choose Student --</option>
+                                <option th:each="st : ${students}" th:value="${st.id}" th:text="${st.name} + ' (' + (${st.rollNumber} ?: 'No Roll') + ')'">Student</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="label-caps small text-muted">Academic Subject</label>
+                            <select name="subject_name" class="form-select" required style="border-radius: 8px;">
+                                <option value="">-- Choose Subject --</option>
+                                <option th:each="sub : ${all_subjects}" th:value="${sub}" th:text="${sub}">Subject</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="label-caps small text-muted">Status</label>
+                            <select name="status" class="form-select" style="border-radius: 8px;">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-zen w-100 py-2 shadow-sm" style="border-radius: 8px;">
+                                <i class="fa fa-check me-1"></i> Mark
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="glass-card h-100">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
+                        <h4 class="mb-0">Academy Register</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            <form th:action="@{/faculty_dashboard}" method="GET" class="d-flex gap-2">
+                                <select name="reg_subject" class="form-select form-select-sm" 
+                                        style="min-width: 150px; border-radius: 8px; border-color: #e2e8f0;" onchange="this.form.submit()">
+                                    <option value="All Subjects" th:selected="${current_reg_subject == 'All Subjects'}">All Subjects</option>
+                                    <option th:each="sub : ${all_subjects}" th:value="${sub}" th:text="${sub}" th:selected="${current_reg_subject == sub}">Subject</option>
+                                </select>
+                                <input type="text" name="search" class="form-control form-control-sm" 
+                                       style="min-width: 150px; background: #fff; border-color: #e2e8f0; color: var(--text-main); border-radius: 8px;" 
+                                       placeholder="Search name..." th:value="${current_search}">
+                                <button type="submit" class="btn btn-zen btn-secondary btn-sm">Search</button>
+                            </form>
+                            <a th:href="@{/export_attendance(search=${current_search}, class_name=${current_class})}" 
+                               class="btn btn-zen btn-secondary btn-sm">
+                                <i class="fa fa-file-csv me-1"></i> Export
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Student Verification</th>
+                                    <th>Class / Group</th>
+                                    <th>Roll Number</th>
+                                    <th class="text-center">Verification Count</th>
+                                    <th class="text-center">Presence (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${!#lists.isEmpty(students)}" th:each="student : ${students}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img th:if="${student.image != null}" th:src="@{'/uploads/' + ${student.image}}"
+                                                class="rounded-circle border border-slate-200 shadow-sm" height="42" width="42" style="object-fit:cover;">
+                                            <div th:unless="${student.image != null}" class="bg-slate-50 rounded-circle d-flex align-items-center justify-content-center border border-slate-200" style="width: 42px; height: 42px;">
+                                                <i class="fa fa-user text-muted small"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <div class="fw-bold" th:text="${student.name}">Name</div>
+                                                <div class="text-muted smaller" style="font-size: 0.75rem;" th:text="${student.email}">email@domain.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border" th:text="${student.className != null ? student.className : 'Not Assigned'}">Class</span>
+                                    </td>
+                                    <td>
+                                        <code class="text-brand-primary" th:text="${student.rollNumber != null ? student.rollNumber : 'N/A'}">Roll</code>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="pill pill-secondary small" th:text="${student.displayStats}">0 / 0</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold"
+                                             th:classappend="${student.attendancePct >= 75 ? 'text-success' : (student.attendancePct >= 50 ? 'text-warning' : 'text-danger')}"
+                                             th:text="${student.attendancePct} + '%'">
+                                            0%
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(students)}">
+                                    <td colspan="5" class="text-center py-4 text-muted">No students found matching your criteria.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script th:inline="javascript">
+        const searchInput = document.getElementById('studentSearchInput');
+        const hiddenIdInput = document.getElementById('controlStudentId');
+        const datalist = document.getElementById('studentDataList');
+        const subjectSelect = document.getElementById('controlSubject');
+        const statusDiv = document.getElementById('registrationStatus');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const statusBadge = document.getElementById('statusBadge');
+        const initBtn = document.getElementById('initScanBtn');
+
+        function updateStudentId() {
+            const val = searchInput.value;
+            const option = Array.from(datalist.options).find(opt => opt.value === val);
+            if (option) {
+                hiddenIdInput.value = option.getAttribute('data-id');
+                checkRegistration();
+            } else {
+                hiddenIdInput.value = '';
+                checkRegistration();
+            }
+        }
+
+        async function checkRegistration() {
+            const studentId = hiddenIdInput.value;
+            const subjectName = subjectSelect.value;
+
+            if (!studentId || !subjectName) {
+                statusDiv.classList.add('d-none');
+                initBtn.disabled = true;
+                return;
+            }
+
+            statusDiv.classList.remove('d-none');
+            statusText.innerText = 'Verifying Registry...';
+            statusBadge.innerText = '...';
+            statusBadge.className = 'badge rounded-pill px-3 bg-secondary';
+
+            try {
+                const response = await fetch(`/check_registration_api?student_id=${studentId}&subject_name=${encodeURIComponent(subjectName)}`);
+                const data = await response.json();
+
+                if (data.registered) {
+                    statusIcon.className = 'fa fa-circle-check text-success me-2';
+                    statusText.innerText = 'Registration Secured';
+                    statusBadge.innerText = 'OK';
+                    statusBadge.classList.replace('bg-secondary', 'bg-success');
+                    statusDiv.classList.replace('border', 'border-success');
+                    statusDiv.style.background = '#f0fdf4';
+                    initBtn.disabled = false;
+                } else {
+                    statusIcon.className = 'fa fa-circle-xmark text-danger me-2';
+                    statusText.innerText = 'Student is not enrolled. Enroll first';
+                    statusBadge.innerText = 'DENIED';
+                    statusBadge.classList.replace('bg-secondary', 'bg-danger');
+                    statusDiv.classList.replace('border', 'border-danger');
+                    statusDiv.style.background = '#fef2f2';
+                    initBtn.disabled = true;
+                }
+            } catch (e) {
+                statusText.innerText = 'Connection Error';
+                initBtn.disabled = true;
+            }
+        }
+
+        searchInput.addEventListener('input', updateStudentId);
+        subjectSelect.addEventListener('change', checkRegistration);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let errorMsg = /*[[${error}]]*/ null;
+            let successMsg = /*[[${success}]]*/ null;
+            let warningMsg = /*[[${warning}]]*/ null;
+            let infoMsg = /*[[${info}]]*/ null;
+
+            function showToast(text, bg) {
+                if (!text) return;
+                Toastify({ text: text, duration: 4000, close: true, gravity: "top", position: "right", style: { background: bg, borderRadius: "10px", padding: "12px 20px", color: "#fff" } }).showToast();
+            }
+            if (errorMsg) showToast(errorMsg, "linear-gradient(to right, #f43f5e, #e11d48)");
+            if (successMsg) showToast(successMsg, "linear-gradient(to right, #10b981, #059669)");
+            if (warningMsg) showToast(warningMsg, "linear-gradient(to right, #f59e0b, #d97706)");
+            if (infoMsg) showToast(infoMsg, "linear-gradient(to right, #3b82f6, #2563eb)");
+        });
+    </script>
+</body>
+</html>
