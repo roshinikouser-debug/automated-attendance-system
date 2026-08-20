@@ -1,141 +1,74 @@
-# 📸 Automated Attendance System (Spring Boot + OpenCV)
+# Automated Attendance System
 
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![OpenCV](https://img.shields.io/badge/JavaCV%2FOpenCV-1.5.10-blue.svg)](https://bytedeco.org/)
-[![Database](https://img.shields.io/badge/SQLite-3.45-lightgrey.svg)](https://www.sqlite.org/)
-[![PDF Export](https://img.shields.io/badge/OpenPDF-1.3.37-red.svg)](https://github.com/LibrePDF/OpenPDF)
+A Spring Boot Java application for managing student attendance using facial recognition and web dashboards for faculty and students.
 
-A full-stack, AI-powered **Automated Attendance System** built using **Java 17**, **Spring Boot 3**, **Thymeleaf**, **OpenCV/JavaCV**, and **SQLite**. The system automates attendance tracking through facial recognition technology while offering comprehensive dashboards for both Faculty and Students.
+## Project Overview
 
----
+This project automates classroom attendance marking using computer vision. Faculty members can start a face-recognition attendance session using a web camera, manage class rosters, update attendance manually, and download class reports as PDF files. Students can log in to check their overall and subject-wise attendance percentages.
 
-## ✨ Features
+## Features
 
-- 🤖 **AI Facial Recognition Engine**: Integrated **JavaCV / OpenCV** engine for automated biometric face identification and attendance marking.
-- 👨‍🏫 **Faculty Portal**:
-  - Live face-recognition attendance taking session.
-  - Manual attendance marking & status overrides (Present / Absent / Late).
-  - Subject enrollment management & student rosters.
-  - Automated PDF report generation & analytics download.
-- 🎓 **Student Portal**:
-  - Personal dashboard displaying overall & subject-wise attendance percentages.
-  - Real-time breakdown of attended vs. missed lectures.
-  - Attendance history log.
-- 📄 **PDF Report Generation**: Instant export of class attendance sheets powered by **OpenPDF**.
-- 🔐 **Authentication & Security**:
-  - Role-based login system for **Faculty** and **Students**.
-  - Password reset mechanism with email token generation.
-- 💾 **Zero-Config Database**: Embedded **SQLite** database managed via **Spring Data JPA** & **Hibernate**.
+- **Facial Recognition Attendance**: Automatically identifies students and records attendance using OpenCV / JavaCV.
+- **Faculty Dashboard**:
+  - Take attendance using live camera face recognition.
+  - View class rosters and modify student attendance statuses (Present/Absent).
+  - Export class attendance reports to PDF.
+- **Student Dashboard**:
+  - Track overall attendance percentage across all subjects.
+  - View detailed attendance logs and subject breakdowns.
+- **Authentication System**: Separate login access for faculty members and students, with password reset support.
+- **Database**: Embedded SQLite database managed through Spring Data JPA and Hibernate.
 
----
+## Technologies Used
 
-## 🛠️ Tech Stack
+- **Java 17** & **Spring Boot 3.2**
+- **Thymeleaf**, HTML5, CSS3, JavaScript
+- **JavaCV / OpenCV** (Face processing & recognition)
+- **SQLite** & **Spring Data JPA**
+- **OpenPDF** (PDF export generation)
+- **Maven** (Build and dependency management)
 
-| Domain | Technology |
-| :--- | :--- |
-| **Backend Framework** | Java 17, Spring Boot 3.2.3 |
-| **Frontend / Templates** | Thymeleaf, HTML5, CSS3, JavaScript |
-| **Computer Vision / AI** | JavaCV / OpenCV 1.5.10 |
-| **Database & ORM** | SQLite JDBC, Spring Data JPA, Hibernate 6 |
-| **PDF Generation** | OpenPDF 1.3.37 |
-| **Build Tool** | Apache Maven |
-
----
-
-## 📂 Project Structure
+## Project Structure
 
 ```text
 AutoSystem-Java/
 ├── pom.xml
-├── .gitignore
-├── README.md
-├── .mvn/
 └── src/
-    ├── main/
-    │   ├── java/com/autosystem/
-    │   │   ├── AutoSystemApplication.java        # Main Spring Boot Entrypoint
-    │   │   ├── controller/                      # Web Controllers
-    │   │   │   ├── ApiController.java
-    │   │   │   ├── AuthController.java
-    │   │   │   ├── CustomErrorController.java
-    │   │   │   ├── FacultyController.java
-    │   │   │   └── StudentController.java
-    │   │   ├── model/                           # JPA Entities
-    │   │   │   ├── Attendance.java
-    │   │   │   ├── Faculty.java
-    │   │   │   ├── PasswordResetToken.java
-    │   │   │   ├── Student.java
-    │   │   │   └── SubjectEnrollment.java
-    │   │   ├── repository/                      # Data Repositories
-    │   │   │   ├── AttendanceRepository.java
-    │   │   │   ├── FacultyRepository.java
-    │   │   │   ├── PasswordResetTokenRepository.java
-    │   │   │   ├── StudentRepository.java
-    │   │   │   └── SubjectEnrollmentRepository.java
-    │   │   └── service/                         # Business Logic & AI Engines
-    │   │       ├── AttendanceService.java
-    │   │       ├── DataInitializerService.java
-    │   │       ├── FaceEngineService.java       # OpenCV Biometric Processing
-    │   │       └── PdfExportService.java        # PDF Export Engine
-    │   └── resources/
-    │       ├── application.properties           # App & SQLite Configuration
-    │       ├── static/css/style.css             # UI Stylesheet
-    │       └── templates/                       # Thymeleaf Web UI Views
-    │           ├── base.html
-    │           ├── faculty_dashboard.html
-    │           ├── student_dashboard.html
-    │           ├── login.html
-    │           ├── register.html
-    │           ├── forgot_password.html
-    │           └── reset_password.html
+    └── main/
+        ├── java/com/autosystem/
+        │   ├── AutoSystemApplication.java
+        │   ├── controller/      # Web controllers (Auth, Faculty, Student, Api)
+        │   ├── model/           # Data entities (Student, Faculty, Attendance, Subject)
+        │   ├── repository/      # JPA database access layer
+        │   └── service/         # Services (Face Recognition, Attendance, PDF Export)
+        └── resources/
+            ├── application.properties
+            ├── static/css/      # Custom styles
+            └── templates/       # HTML views (Dashboards, Login, Register)
 ```
 
----
-
-## 🚀 Getting Started
+## How to Run
 
 ### Prerequisites
+- Installed **JDK 17** or higher
+- Installed **Maven**
 
-Make sure you have the following installed on your machine:
-- **JDK 17** or higher (`java -version`)
-- **Maven 3.8+** (`mvn -version`)
-- **Git**
+### Running Locally
 
-### Installation & Setup
-
-1. **Clone the Repository**:
+1. Clone the repository:
    ```bash
    git clone https://github.com/roshinikouser-debug/Atuomated-attendnce-system-.git
    cd Atuomated-attendnce-system-
    ```
 
-2. **Build the Project**:
-   ```bash
-   mvn clean install
-   ```
-
-3. **Run the Spring Boot Application**:
+2. Run the application using Maven:
    ```bash
    mvn spring-boot:run
    ```
 
-4. **Access the Application**:
-   Open your browser and navigate to:
-   ```text
-   http://localhost:8080
-   ```
+3. Open your browser and navigate to:
+   `http://localhost:8080`
 
----
+## Author
 
-## 🔒 Default Credentials & Initial Data
-
-Upon first startup, `DataInitializerService` automatically creates initial demo records:
-- **Faculty Login**: Default faculty account automatically seeded.
-- **Student Login**: Default student account automatically seeded.
-
----
-
-## 📄 License & Author
-
-Developed with ❤️ by **[Roshini Kouser](https://github.com/roshinikouser-debug)**.
+Developed by **Roshini Kouser**
